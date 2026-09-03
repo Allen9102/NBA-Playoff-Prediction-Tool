@@ -4,6 +4,7 @@ This is a team project to predict NBA playoff performance by converting player-i
 The project has not been finalized yet; please wait a little longer.
 
 ## Methodology overview
+```python
 NBA API
    ↓
 Game & Player Data
@@ -19,6 +20,7 @@ Predicted Playoff Wins
 Softmax Normalization
    ↓
 Estimated Championship Probability
+```
 
 ## I. Convert time format: parse_min
 To prepare for machine learning, we have to convert the player's playing time, a string in "mm:ss" format, to a floating-point number of minutes, e.g., "12:30" → 12.5 minutes.
@@ -97,9 +99,12 @@ The resulting probabilities are saved as CSV files and visualized using bar char
 ## V. Room for improvement
 **1. Automate playoff team selection.**
 The playoff team lists are currently hard-coded for each season, such as playoffs_22_23 and playoffs_23_24. Since playoff teams vary from season to season, these lists should be generated automatically from the data.
+
 **2. Parameterize the season of interest.**
 We should use a single variable to specify the season of interest and replace hard-coded season references throughout the code. For example, we could define season_of_interest = "2024-25" and use this variable wherever the target season is referenced. This would allow us to change the prediction year by modifying only one variable.
+
 **3. Improve the training and validation strategy.**
 Since the goal is to predict future playoff performance, a strictly chronological training and validation split could better reflect the real-world prediction setting.
+
 **4. Improve probability estimation.**
 The current championship probabilities are obtained by applying softmax normalization to the model's predicted playoff-win values. Future versions could explore a more statistically grounded approach for estimating and calibrating championship probabilities.
