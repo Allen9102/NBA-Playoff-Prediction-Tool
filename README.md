@@ -46,11 +46,17 @@ We construct two heatmaps to represent player cooperation within each team:
 * **Shared Plus-Minus per Minute:** a measure of the combined plus-minus performance of two players relative to their shared playing time.
 
 For each game, the shared playing time of a player pair is calculated as the minimum of their individual playing times:
+
 `shared_minutes = min(player_1_minutes, player_2_minutes)`
+
 The shared plus-minus is calculated by summing the individual plus-minus values of the two players:
+
 `shared_PM = player_1_plus_minus + player_2_plus_minus`
+
 These values are aggregated across all games in which the player pair appeared. The shared plus-minus per minute is then calculated as:
+
 `shared_PM_per_min = total_shared_PM / total_shared_minutes`
+
 The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
 
 
