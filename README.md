@@ -69,5 +69,9 @@ Steps:
 * The best model (with the lowest validation loss) is saved, and early stopping is triggered if no improvement occurs for 100 epochs.
 * Training and evaluation steps include sending data to the proper device (CPU or GPU) and computing average losses.
 
-## IV.Visiualize data
+## IV. Visiualize data
 Here, we will output the names and championship probabilities of the 16 teams entering the playoffs and save them to a CSV file. We visualize the predicted probabilities by year, allowing users to select the year of interest. Additionally, since our model focuses on identifying the championship-winning team, we highlight the predicted champion.
+
+## V. Room for improvement
+1. We manually build a list like `playoffs_22_23` to store the team for machine learning, but teams will change in different years, so the list should be automated rather than created manually.
+2. We should use a variable to specify the season of interest and replace hard-coded season references throughout the code. For example, if we want to make predictions for the 2024–25 season, we can define `year_of_interest` = "24-25" and use `year_of_interest` wherever the season is referenced. This would allow us to change the prediction year by modifying only one variable.
