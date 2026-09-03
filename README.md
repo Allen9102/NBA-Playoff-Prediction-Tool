@@ -29,19 +29,7 @@ The logic is as follows:
 2. If the value is originally a number, convert it to a floating-point number
 3. Split the string "mm:ss" into two integers and convert to minutes: 12:30 → 12 + 30 / 60 → 12.5
 4. If the string cannot be split correctly (e.g., malformed, empty string), return 0.0 conservatively.
-```python
-def parse_min(min_str):
-    if pd.isnull(min_str):
-        return 0.0 # if NaN, return 0.0
-    if isinstance(min_str, (int, float)):
-        return float(min_str) # dim it as a float.
-    try:
-        minutes, seconds = map(int, min_str.split(':'))
-        return minutes + seconds / 60 # mm:ss to a float
-    except:
-        return 0.0
 
-```
 ## II. Create heat maps to analyze the effectiveness of player cooperation
 This process analyzes the effectiveness of player cooperation within a single team. It calculates the effectiveness of pairwise combinations based on the players' "simultaneous playing time" and "plus-minus performance" on the court, and finally uses a heatmap to visualize the results for CNN machine learning.
 
