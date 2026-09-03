@@ -40,8 +40,19 @@ We set the weight based on the stage that each team reaches. Teams that reach th
 To reduce noise from players with limited playing time, we include only players who accumulated at least 820 minutes during the regular season.
 
 ### 3. Create heatmap
-We have a big for loop to create heatmaps. This process takes time to complete because the NBA API blocks users who request data too frequently; this can be avoided by using `time.sleep(0.6)`.
-Moreover, if you fail to produce a heatmap midway, the code will continue producing images. If you rerun the code, the heatmaps previously generated will not be produced again.
+We construct two heatmaps to represent player cooperation within each team:
+
+* **Shared Minutes:** the estimated amount of time two players were simultaneously on the court in each game.
+* **Shared Plus-Minus per Minute:** a measure of the combined plus-minus performance of two players relative to their shared playing time.
+
+For each game, the shared playing time of a player pair is calculated as the minimum of their individual playing times:
+`shared_minutes = min(player_1_minutes, player_2_minutes)`
+The shared plus-minus is calculated by summing the individual plus-minus values of the two players:
+`shared_PM = player_1_plus_minus + player_2_plus_minus`
+These values are aggregated across all games in which the player pair appeared. The shared plus-minus per minute is then calculated as:
+`shared_PM_per_min = total_shared_PM / total_shared_minutes`
+The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
+
 
 ### 4. Create a CSV file to save teams' information
 We transform the playoff results into a flat, structured DataFrame, with each row representing a team's performance in a given season. We then sort the data by season and playoff wins, and save the final table as a CSV file `labels.csv` for further analysis and modeling.
