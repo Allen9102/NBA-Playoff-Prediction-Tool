@@ -59,6 +59,15 @@ The outputs of the two are concatenated and fed into the fully connected layer, 
 
 Steps:
 1. The DualCNN model uses two pretrained ResNet-18 branches to extract features from two input images.
-2. It replaces each ResNet's final layer with nn.Identity() to get 512-dimensional feature vectors, which are concatenated into a 1024-dimensional vector.
+2. It replaces each ResNet's final layer with `nn.Identity()` to get 512-dimensional feature vectors, which are concatenated into a 1024-dimensional vector.
 3. The combined vector is passed through custom fully connected layers for prediction (e.g., binary classification).
 4. The model uses Kaiming initialization and runs on GPU if available; otherwise, it defaults to CPU.
+
+### 4. Training
+* The model is trained using MSE loss and the AdamW optimizer over up to 600 epochs.
+* Training and evaluation are done using separate dataloaders, and losses are recorded each epoch.
+* The best model (with the lowest validation loss) is saved, and early stopping is triggered if no improvement occurs for 100 epochs.
+* Training and evaluation steps include sending data to the proper device (CPU or GPU) and computing average losses.
+
+## IV.Visiualize data
+Here, we will output the names and championship probabilities of the 16 teams entering the playoffs and save them to a CSV file. We visualize the predicted probabilities by year, allowing users to select the year of interest. Additionally, since our model focuses on identifying the championship-winning team, we highlight the predicted champion.
