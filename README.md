@@ -1,8 +1,6 @@
 # NBA-Playoff-Prediction-Tool
 This is a team project to predict NBA playoff performance by converting player-interaction data into heatmap images and feeding them into a dual-branch CNN (ResNet-18).
 
-The project has not been finalized yet; please wait a little longer.
-
 ## Methodology overview
 ```python
 NBA API
