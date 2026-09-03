@@ -10,7 +10,7 @@ The logic is as follows:
 2. If the value is originally a number, convert it to a floating-point number
 3. Split the string "mm:ss" into two integers and convert to minutes: 12:30 → 12 + 30 / 60 → 12.5
 4. If the string cannot be split correctly (e.g., malformed, empty string), return 0.0 conservatively.
-'''python
+```python
 def parse_min(min_str):
     if pd.isnull(min_str):
         return 0.0 # if NaN, return 0.0
@@ -22,11 +22,11 @@ def parse_min(min_str):
     except:
         return 0.0
 
-'''
+```
 ## II. Create heat maps to analyze the effectiveness of player cooperation
 This process analyzes the effectiveness of player cooperation within a single team. It calculates the effectiveness of pairwise combinations based on the players' "simultaneous playing time" and "plus-minus performance" on the court, and finally uses a heatmap to visualize the results for CNN machine learning.
 
-### 1. Provide weights for each team's match results: labels_by_season
+### 1. Provide weights for each team's match results
 We set the weight based on the stage that each team reaches. Once a team reaches the round of 16, each of them will have a weight of one point, and each time you advance to the next round, the weight will be multiplied by two until the championship, where it will be 16 points.
 
 ### 2. Create heatmap
@@ -50,7 +50,7 @@ Before doing machine learning, we split the 2016 ~ 2024 data into training and t
 
 The result is a clean dataset ready for training deep learning models to predict playoff success based on visual team dynamics.
 
-### 3. Build the model: `class DualCNN(nn.Module)`
+### 3. Build the model
 We use a dual-branch CNN architecture to process two different but complementary visual features:
 * The first branch processes the heat map of players' **shared playing time** (measures the closeness of the appearance combination)
 * The second branch processes the **plus-minus** heat map per minute (measures the effectiveness of the combination)
