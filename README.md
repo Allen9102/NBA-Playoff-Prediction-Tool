@@ -46,7 +46,7 @@ Steps:
 3. Apply image transformations
 
 ### 2. Split training and testing sets based on specific seasons
-Before doing machine learning, we split the 2016 ~ 2024 data into training and test groups at a 2:1 ratio, and use the 2024 ~ 2025 regular season data as the prediction object
+Before doing machine learning, we split the 2016 ~ 2024 data into training and test sets at a 2:1 ratio, and use the 2024 ~ 2025 regular season data as the target for prediction. We use a 2:1 ratio because we don't have much data for machine learning.
 
 The result is a clean dataset ready for training deep learning models to predict playoff success based on visual team dynamics.
 
