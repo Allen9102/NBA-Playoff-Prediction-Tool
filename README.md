@@ -3,6 +3,23 @@ This is a team project to predict NBA playoff performance by converting player-i
 
 The project has not been finalized yet; please wait a little longer.
 
+## Methodology overview
+NBA API
+   ↓
+Game & Player Data
+   ↓
+Shared Minutes + Plus-Minus
+   ↓
+Heatmaps
+   ↓
+Dual-Branch ResNet-18
+   ↓
+Predicted Playoff Wins
+   ↓
+Softmax Normalization
+   ↓
+Estimated Championship Probability
+
 ## I. Convert time format: parse_min
 To prepare for machine learning, we have to convert the player's playing time, a string in "mm:ss" format, to a floating-point number of minutes, e.g., "12:30" → 12.5 minutes.
 The logic is as follows:
@@ -27,13 +44,16 @@ def parse_min(min_str):
 This process analyzes the effectiveness of player cooperation within a single team. It calculates the effectiveness of pairwise combinations based on the players' "simultaneous playing time" and "plus-minus performance" on the court, and finally uses a heatmap to visualize the results for CNN machine learning.
 
 ### 1. Provide weights for each team's match results
-We set the weight based on the stage that each team reaches. Once a team reaches the round of 16, each of them will have a weight of one point, and each time you advance to the next round, the weight will be multiplied by two until the championship, where it will be 16 points.
+We set the weight based on the stage that each team reaches. Teams that reach the First Round receive a weight of 1, and the weight doubles for each subsequent playoff round, resulting in a weight of 16 for the champion.
 
-### 2. Create heatmap
+### 2. Filter Eligible Players
+To reduce noise from players with limited playing time, we include only players who accumulated at least 820 minutes during the regular season.
+
+### 3. Create heatmap
 We have a big for loop to create heatmaps. This process takes time to complete because the NBA API blocks users who request data too frequently; this can be avoided by using `time.sleep(0.6)`.
 Moreover, if you fail to produce a heatmap midway, the code will continue producing images. If you rerun the code, the heatmaps previously generated will not be produced again.
 
-### 3. Create a CSV file to save teams' information
+### 4. Create a CSV file to save teams' information
 We transform the playoff results into a flat, structured DataFrame, with each row representing a team's performance in a given season. We then sort the data by season and playoff wins, and save the final table as a CSV file `labels.csv` for further analysis and modeling.
 
 ## III. Machine Learning
@@ -46,9 +66,9 @@ Steps:
 3. Apply image transformations
 
 ### 2. Split training and testing sets based on specific seasons
-Before doing machine learning, we split the 2016 ~ 2024 data into training and test sets at a 2:1 ratio, and use the 2024 ~ 2025 regular season data as the target for prediction. We use a 2:1 ratio because we don't have much data for machine learning.
+We use four historical seasons (2016–17, 2017–18, 2018–19, and 2021–22) as the training set and two subsequent seasons (2022–23 and 2023–24) as the validation set. The 2024–25 season is reserved as the prediction target.
 
-The result is a clean dataset ready for training deep learning models to predict playoff success based on visual team dynamics.
+We split the data by season rather than randomly across team-season samples, allowing the model to be evaluated on seasons that are separate from those used for training.
 
 ### 3. Build the model
 We use a dual-branch CNN architecture to process two different but complementary visual features:
@@ -58,9 +78,9 @@ We use a dual-branch CNN architecture to process two different but complementary
 The outputs of the two are concatenated and fed into the fully connected layer, and the prediction is a continuous value (number of playoff wins), which meets the requirements of the regression task.
 
 Steps:
-1. The DualCNN model uses two pretrained ResNet-18 branches to extract features from two input images.
+1. Two ImageNet-pretrained ResNet-18 models are used as feature extractors.
 2. It replaces each ResNet's final layer with `nn.Identity()` to get 512-dimensional feature vectors, which are concatenated into a 1024-dimensional vector.
-3. The combined vector is passed through custom fully connected layers for prediction (e.g., binary classification).
+3. The combined 1024-dimensional feature vector is passed through fully connected layers to predict the number of playoff wins as a continuous value.
 4. The model uses Kaiming initialization and runs on GPU if available; otherwise, it defaults to CPU.
 
 ### 4. Training
@@ -70,8 +90,16 @@ Steps:
 * Training and evaluation steps include sending data to the proper device (CPU or GPU) and computing average losses.
 
 ## IV. Visiualize data
-Here, we will output the names and championship probabilities of the 16 teams entering the playoffs and save them to a CSV file. We visualize the predicted probabilities by year, allowing users to select the year of interest. Additionally, since our model focuses on identifying the championship-winning team, we highlight the predicted champion.
+The model predicts the expected number of playoff wins for each team. For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then converted into relative championship probabilities using softmax normalization across the teams.
+
+The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of the playoff teams. The team with the highest predicted probability is highlighted as the predicted champion.
 
 ## V. Room for improvement
-1. We manually build a list like `playoffs_22_23` to store the team for machine learning, but teams will change in different years, so the list should be automated rather than created manually.
-2. We should use a variable to specify the season of interest and replace hard-coded season references throughout the code. For example, if we want to make predictions for the 2024–25 season, we can define `year_of_interest` = "24-25" and use `year_of_interest` wherever the season is referenced. This would allow us to change the prediction year by modifying only one variable.
+**1. Automate playoff team selection.**
+The playoff team lists are currently hard-coded for each season, such as playoffs_22_23 and playoffs_23_24. Since playoff teams vary from season to season, these lists should be generated automatically from the data.
+**2. Parameterize the season of interest.**
+We should use a single variable to specify the season of interest and replace hard-coded season references throughout the code. For example, we could define season_of_interest = "2024-25" and use this variable wherever the target season is referenced. This would allow us to change the prediction year by modifying only one variable.
+**3. Improve the training and validation strategy.**
+Since the goal is to predict future playoff performance, a strictly chronological training and validation split could better reflect the real-world prediction setting.
+**4. Improve probability estimation.**
+The current championship probabilities are obtained by applying softmax normalization to the model's predicted playoff-win values. Future versions could explore a more statistically grounded approach for estimating and calibrating championship probabilities.
