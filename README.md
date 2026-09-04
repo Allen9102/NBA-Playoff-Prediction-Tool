@@ -46,6 +46,7 @@ We construct two heatmaps to represent player cooperation within each team:
 For each game, the shared playing time of a player pair is calculated as the minimum of their individual playing times:
 
 `shared_minutes = min(player_1_minutes, player_2_minutes)`
+<img width="1200" height="1000" alt="Atlanta_Hawks_201617_shared_minutes" src="https://github.com/user-attachments/assets/c4e93da6-ce4e-4eed-a633-40942d20dd84" />
 
 The shared plus-minus is calculated by summing the individual plus-minus values of the two players:
 
@@ -54,8 +55,12 @@ The shared plus-minus is calculated by summing the individual plus-minus values 
 These values are aggregated across all games in which the player pair appeared. The shared plus-minus per minute is then calculated as:
 
 `shared_PM_per_min = total_shared_PM / total_shared_minutes`
+<img width="1200" height="1000" alt="Atlanta_Hawks_201718_shared_pm_per_min" src="https://github.com/user-attachments/assets/0e31bac9-e9cb-436a-a5c7-ab0e22eeb1d5" />
+<img width="1200" height="1000" alt="Boston_Celtics_202324_shared_pm_per_min" src="https://github.com/user-attachments/assets/d652cd47-a34c-42b6-ba9b-c7251c91d2ec" />
 
-The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
+The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/1aebeea7-3a04-4c93-a355-ec2fb5f64548" />
+<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/5b0fa231-5d9a-4849-b3b9-2a4f4a639e59" />
+
 
 
 ### 4. Create a CSV file to save teams' information
@@ -93,11 +98,14 @@ Steps:
 * Training and evaluation are done using separate dataloaders, and losses are recorded each epoch.
 * The best model (with the lowest validation loss) is saved, and early stopping is triggered if no improvement occurs for 100 epochs.
 * Training and evaluation steps include sending data to the proper device (CPU or GPU) and computing average losses.
+<img width="556" height="443" alt="Loss curve" src="https://github.com/user-attachments/assets/91f59234-c5bc-4805-b55a-6c7b54ff26b4" />
+
 
 ## IV. Visiualize data
 The model predicts the expected number of playoff wins for each team. For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then converted into relative championship probabilities using softmax normalization across the teams.
 
 The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of the playoff teams. The team with the highest predicted probability is highlighted as the predicted champion.
+
 
 ## V. Room for improvement
 **1. Automate playoff team selection.**
