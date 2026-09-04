@@ -58,9 +58,7 @@ These values are aggregated across all games in which the player pair appeared. 
 <img width="1200" height="1000" alt="Atlanta_Hawks_201718_shared_pm_per_min" src="https://github.com/user-attachments/assets/0e31bac9-e9cb-436a-a5c7-ab0e22eeb1d5" />
 <img width="1200" height="1000" alt="Boston_Celtics_202324_shared_pm_per_min" src="https://github.com/user-attachments/assets/d652cd47-a34c-42b6-ba9b-c7251c91d2ec" />
 
-The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/1aebeea7-3a04-4c93-a355-ec2fb5f64548" />
-<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/5b0fa231-5d9a-4849-b3b9-2a4f4a639e59" />
-
+The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
 
 
 ### 4. Create a CSV file to save teams' information
@@ -103,8 +101,11 @@ Steps:
 
 ## IV. Visiualize data
 The model predicts the expected number of playoff wins for each team. For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then converted into relative championship probabilities using softmax normalization across the teams.
+<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/1aebeea7-3a04-4c93-a355-ec2fb5f64548" />
 
 The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of the playoff teams. The team with the highest predicted probability is highlighted as the predicted champion.
+<img width="455" height="558" alt="截圖 2026-09-04 11 07 20" src="https://github.com/user-attachments/assets/21b427e6-9928-4ed7-881b-44949d8a46b0" />
+<img width="1007" height="580" alt="截圖 2026-09-04 11 07 36" src="https://github.com/user-attachments/assets/9853e72b-bb63-4907-a33d-ab2f6df8df50" />
 
 
 ## V. Room for improvement
