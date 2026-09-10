@@ -5,8 +5,8 @@ A team project that predicts NBA playoff performance by transforming player-inte
 ## Project Structure
 ```text
 NBA-Playoff-Prediction-Tool/
-├── shared_minutes/ # pictures for CNN
-├── shared_pm_per_min/ # pictures for CNN
+├── shared_minutes/
+├── shared_pm_per_min/
 ├── .gitignore
 ├── LICENSE
 ├── NBA Playoff Prediction Tool.py
