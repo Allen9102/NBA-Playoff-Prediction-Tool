@@ -187,9 +187,12 @@ The resulting probabilities are saved as CSV files and visualized using bar char
 
 The team with the highest estimated probability is highlighted as the predicted champion.
 
-<img width="455" height="558" alt="Interactive championship probability visualization" src="https://github.com/user-attachments/assets/21b427e6-9923-4ed7-881b-44949d8a46b4" />
 
-<img width="1007" height="580" alt="Championship probability comparison" src="https://github.com/user-attachments/assets/9853e72b-bb63-4907-4a93-a5c7-ab2f6df8df50" />
+<img width="455" height="558" alt="bar可調整" src="https://github.com/user-attachments/assets/5f83def9-0fd3-4cad-a66d-982d108465e3" />
+
+
+<img width="1007" height="580" alt="預測結果" src="https://github.com/user-attachments/assets/37009f69-8dce-4d5b-89f8-96856b20b862" />
+
 
 ## V. Limitations and Future Improvements
 
