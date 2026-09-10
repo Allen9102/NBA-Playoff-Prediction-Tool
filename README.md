@@ -181,7 +181,9 @@ The model predicts the expected number of playoff wins for each team.
 
 For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then transformed into relative championship probabilities using softmax normalization across the teams.
 
-<img width="1040" height="634" alt="Championship probability visualization" src="https://github.com/user-attachments/assets/1aebea7a-3a04-4c93-a355-ec2fb5f64548" />
+
+<img width="1040" height="634" alt="預測結果（綠色）" src="https://github.com/user-attachments/assets/29ae5f89-cda1-44a3-9f64-7a4c0f2bfc06" />
+
 
 The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of playoff teams.
 
