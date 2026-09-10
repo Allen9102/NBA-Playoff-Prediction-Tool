@@ -1,130 +1,220 @@
 # NBA-Playoff-Prediction-Tool
-This is a team project to predict NBA playoff performance by converting player-interaction data into heatmap images and feeding them into a dual-branch CNN (ResNet-18).
+
+A team project that predicts NBA playoff performance by transforming player-interaction data into heatmap representations and using a dual-branch CNN based on ResNet-18.
+
+## Project Structure
+```text
+    NBA-Playoff-Prediction-Tool/
+    ├── data/
+    │   ├── heatmap/
+    │   │   ├── shared_minutes/
+    │   │   └── shared_pm_per_min/
+    │   └── labels.csv
+    │
+    ├── model/
+    │   └── best_model.pth
+    │
+    ├── results/
+    │   ├── loss_curve.png
+    │   ├── championship_probability/
+    │   └── ...
+    │
+    ├── NBA Playoff Prediction Tool.py
+    ├── LICENSE
+    └── README.md
+```
+- `data/heatmap/shared_minutes/`: Heatmaps representing the shared playing time of player pairs.
+- `data/heatmap/shared_pm_per_min/`: Heatmaps representing the shared plus-minus per minute of player pairs.
+- `data/labels.csv`: Team-season information and corresponding playoff performance used as training labels.
+- `model/best_model.pth`: Saved model weights from the best-performing model based on validation loss.
+- `results/`: Model outputs, loss curves, championship probability results, and visualizations.
+- `NBA Playoff Prediction Tool.py`: Main Python script for data processing, heatmap generation, model training, prediction, and visualization.
 
 ## My Contribution
-In this project, I was responsible for visualizing the results and heatmaps in collaboration with one of my teammates and for explaining the rationale for MSE to teammates without a statistics background. 
 
-## Methodology overview
-```python
-NBA API
-   ↓
-Game & Player Data
-   ↓
-Shared Minutes + Plus-Minus
-   ↓
-Heatmaps
-   ↓
-Dual-Branch ResNet-18
-   ↓
-Predicted Playoff Wins
-   ↓
-Softmax Normalization
-   ↓
-Estimated Championship Probability
-```
+My primary contributions to this project were:
 
-## I. Convert time format: parse_min
-To prepare for machine learning, we have to convert the player's playing time, a string in "mm:ss" format, to a floating-point number of minutes, e.g., "12:30" → 12.5 minutes.
-The logic is as follows:
-1. If the number is NaN, return 0.0
-2. If the value is originally a number, convert it to a floating-point number
-3. Split the string "mm:ss" into two integers and convert to minutes: 12:30 → 12 + 30 / 60 → 12.5
-4. If the string cannot be split correctly (e.g., malformed, empty string), return 0.0 conservatively.
+- **Data Visualization:** Designed and analyzed player-interaction heatmaps in collaboration with a teammate.
+- **Model Interpretation:** Visualized model predictions and playoff outcomes to make the results easier to interpret.
+- **Statistical Communication:** Explained the rationale behind using MSE loss and regression-based evaluation to teammates without a statistics background.
 
-## II. Create heat maps to analyze the effectiveness of player cooperation
-This process analyzes the effectiveness of player cooperation within a single team. It calculates the effectiveness of pairwise combinations based on the players' "simultaneous playing time" and "plus-minus performance" on the court, and finally uses a heatmap to visualize the results for CNN machine learning.
+## Methodology Overview
 
-### 1. Provide weights for each team's match results
-We set the weight based on the stage that each team reaches. Teams that reach the First Round receive a weight of 1, and the weight doubles for each subsequent playoff round, resulting in a weight of 16 for the champion.
+    NBA API
+       ↓
+    Game & Player Data
+       ↓
+    Pairwise Player Statistics
+       ↓
+    Two Heatmap Modalities
+       ↓
+    Dual-Branch ResNet-18
+       ↓
+    Predicted Playoff Wins
+       ↓
+    Softmax Transformation
+       ↓
+    Estimated Championship Probability
 
-### 2. Filter Eligible Players
-To reduce noise from players with limited playing time, we include only players who accumulated at least 820 minutes during the regular season.
+## I. Data Preparation
 
-### 3. Create heatmap
-We construct two heatmaps to represent player cooperation within each team:
+### 1. Convert Playing Time
 
-* **Shared Minutes:** the estimated amount of time two players were simultaneously on the court in each game.
-* **Shared Plus-Minus per Minute:** a measure of the combined plus-minus performance of two players relative to their shared playing time.
+Player playing time was originally provided as strings in `mm:ss` format. We converted these values into numerical minutes for downstream feature construction.
 
-For each game, the shared playing time of a player pair is calculated as the minimum of their individual playing times:
+The conversion logic handles:
+
+1. Missing values by returning `0.0`
+2. Numeric values by converting them to floating-point numbers
+3. `mm:ss` strings by converting seconds into fractional minutes
+4. Malformed or empty strings conservatively by returning `0.0`
+
+For example:
+
+`12:30 → 12 + 30 / 60 → 12.5`
+
+### 2. Playoff Outcome Weighting
+
+We assigned weights based on the playoff stage reached by each team. Teams eliminated in the First Round receive a weight of 1, and the weight doubles for each subsequent playoff round, resulting in a weight of 16 for the champion.
+
+### 3. Filter Eligible Players
+
+To reduce noise from players with limited playing time, we included only players who accumulated at least 820 minutes during the regular season.
+
+## II. Player-Interaction Heatmaps
+
+We represent player interactions within each team using two complementary pairwise features:
+
+- **Shared Minutes:** captures the extent to which two players overlap in playing time.
+- **Shared Plus-Minus per Minute:** captures their combined on-court performance relative to their shared playing time.
+
+### 1. Shared Minutes
+
+For each player pair, shared playing time is approximated as:
 
 `shared_minutes = min(player_1_minutes, player_2_minutes)`
 
+These values are aggregated across games in which the player pair appeared.
+
 <img width="1200" height="1000" alt="Atlanta_Hawks_201617_shared_minutes" src="https://github.com/user-attachments/assets/c4e93da6-ce4e-4eed-a633-40942d20dd84" />
 
-The shared plus-minus is calculated by summing the individual plus-minus values of the two players:
+### 2. Shared Plus-Minus per Minute
+
+The shared plus-minus is calculated as:
 
 `shared_PM = player_1_plus_minus + player_2_plus_minus`
 
-These values are aggregated across all games in which the player pair appeared. The shared plus-minus per minute is then calculated as:
+The values are aggregated across games, and shared plus-minus per minute is calculated as:
 
 `shared_PM_per_min = total_shared_PM / total_shared_minutes`
 
-<img width="1200" height="1000" alt="Atlanta_Hawks_201718_shared_pm_per_min" src="https://github.com/user-attachments/assets/0e31bac9-e9cb-436a-a5c7-ab0e22eeb1d5" />
+<img width="1200" height="1000" alt="Atlanta_Hawks_201718_shared_pm_per_min" src="https://github.com/user-attachments/assets/0e31bac9-e9cb-436a-a5c7-ab2f6df8df50" />
+
 <img width="1200" height="1000" alt="Boston_Celtics_202324_shared_pm_per_min" src="https://github.com/user-attachments/assets/d652cd47-a34c-42b6-ba9b-c7251c91d2ec" />
 
-The resulting matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
+The resulting pairwise matrices are visualized as heatmaps and used as the two input modalities for the dual-branch CNN.
 
+### 3. Construct Training Labels
 
-### 4. Create a CSV file to save teams' information
-We transform the playoff results into a flat, structured DataFrame, with each row representing a team's performance in a given season. We then sort the data by season and playoff wins, and save the final table as a CSV file `labels.csv` for further analysis and modeling.
+We transform playoff results into a structured DataFrame, with each row representing a team's performance in a given season.
 
-## III. Machine Learning
+The resulting data are sorted by season and playoff wins and saved as `labels.csv` for downstream modeling.
 
-### 1. Prepare materials for machine learning
-We define a PyTorch dataset for a dual-image input model using NBA heatmap visualizations.
-Steps:
-1. Read label data from a CSV file
-2. Load corresponding heatmap images (shared minutes and plus-minus per minute) for each team-season entry
-3. Apply image transformations
+## III. Machine Learning: Dual-Branch CNN Regression
 
-### 2. Split training and testing sets based on specific seasons
-We use four historical seasons (2016–17, 2017–18, 2018–19, and 2021–22) as the training set and two subsequent seasons (2022–23 and 2023–24) as the validation set. The 2024–25 season is reserved as the prediction target.
+### 1. Prepare the Dataset
 
-We split the data by season rather than randomly across team-season samples, allowing the model to be evaluated on seasons that are separate from those used for training.
+We define a PyTorch dataset for a dual-image input model.
 
-### 3. Build the model
-We use a dual-branch CNN architecture to process two different but complementary visual features:
-* The first branch processes the heat map of players' **shared playing time** (measures the closeness of the appearance combination)
-* The second branch processes the **plus-minus** heat map per minute (measures the effectiveness of the combination)
+The dataset pipeline:
 
-The outputs of the two are concatenated and fed into the fully connected layer, and the prediction is a continuous value (number of playoff wins), which meets the requirements of the regression task.
+1. Reads team-season labels from a CSV file
+2. Loads the corresponding shared-minutes and plus-minus heatmaps
+3. Applies image transformations
+4. Returns the two heatmaps together with the corresponding playoff-win target
 
-Steps:
-1. Two ImageNet-pretrained ResNet-18 models are used as feature extractors.
-2. It replaces each ResNet's final layer with `nn.Identity()` to get 512-dimensional feature vectors, which are concatenated into a 1024-dimensional vector.
-3. The combined 1024-dimensional feature vector is passed through fully connected layers to predict the number of playoff wins as a continuous value.
-4. The model uses Kaiming initialization and runs on GPU if available; otherwise, it defaults to CPU.
+### 2. Temporal Train-Validation Split
 
-### 4. Training
-* The model is trained using MSE loss and the AdamW optimizer over up to 600 epochs.
-* Training and evaluation are done using separate dataloaders, and losses are recorded each epoch.
-* The best model (with the lowest validation loss) is saved, and early stopping is triggered if no improvement occurs for 100 epochs.
-* Training and evaluation steps include sending data to the proper device (CPU or GPU) and computing average losses.
+We split the data by season rather than randomly across team-season observations.
+
+- **Training:** 2016–17, 2017–18, 2018–19, and 2021–22
+- **Validation:** 2022–23 and 2023–24
+- **Prediction Target:** 2024–25
+
+This separation allows the model to be evaluated on seasons that are distinct from those used for training.
+
+### 3. Dual-Branch ResNet-18
+
+We use a dual-branch CNN architecture to process two complementary heatmap representations:
+
+- The **shared-minutes branch** represents the degree of overlap in player appearances.
+- The **plus-minus-per-minute branch** represents the effectiveness of player combinations.
+
+The two branches independently extract image features. Their outputs are then concatenated and passed through fully connected layers to predict the number of playoff wins as a continuous value.
+
+The model architecture consists of:
+
+1. Two ImageNet-pretrained ResNet-18 models used as feature extractors.
+2. Replacement of each ResNet-18 final layer with `nn.Identity()` to obtain a 512-dimensional feature vector.
+3. Concatenation of the two feature vectors into a 1024-dimensional representation.
+4. Fully connected layers that predict playoff wins as a continuous regression target.
+5. Kaiming initialization for the trainable layers.
+6. GPU execution when available, with CPU used as a fallback.
+
+### 4. Model Training
+
+The model is trained using:
+
+- **Loss function:** Mean Squared Error (MSE)
+- **Optimizer:** AdamW
+- **Maximum epochs:** 600
+- **Early stopping:** 100 epochs without improvement
+- **Model selection:** The model with the lowest validation loss is saved.
+
+Training and validation losses are recorded for each epoch.
 
 <img width="556" height="443" alt="Loss curve" src="https://github.com/user-attachments/assets/91f59234-c5bc-4805-b55a-6c7b54ff26b4" />
 
+## IV. Results and Visualization
 
-## IV. Visiualize data
-The model predicts the expected number of playoff wins for each team. For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then converted into relative championship probabilities using softmax normalization across the teams.
+The model predicts the expected number of playoff wins for each team.
 
-<img width="1040" height="634" alt="截圖 2026-09-04 11 06 35" src="https://github.com/user-attachments/assets/1aebeea7-3a04-4c93-a355-ec2fb5f64548" />
+For historical playoff seasons, we apply the trained model to the 16 teams that advanced to the first round. The predicted playoff-win values are then transformed into relative championship probabilities using softmax normalization across the teams.
 
-The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of the playoff teams. The team with the highest predicted probability is highlighted as the predicted champion.
+<img width="1040" height="634" alt="Championship probability visualization" src="https://github.com/user-attachments/assets/1aebea7a-3a04-4c93-a355-ec2fb5f64548" />
 
-<img width="455" height="558" alt="截圖 2026-09-04 11 07 20" src="https://github.com/user-attachments/assets/21b427e6-9928-4ed7-881b-44949d8a46b0" />
-<img width="1007" height="580" alt="截圖 2026-09-04 11 07 36" src="https://github.com/user-attachments/assets/9853e72b-bb63-4907-a33d-ab2f6df8df50" />
+The resulting probabilities are saved as CSV files and visualized using bar charts. An interactive dropdown menu allows users to select a season and compare the estimated championship probabilities of playoff teams.
 
+The team with the highest estimated probability is highlighted as the predicted champion.
 
-## V. Room for improvement
-**1. Automate playoff team selection.**
-The playoff team lists are currently hard-coded for each season, such as playoffs_22_23 and playoffs_23_24. Since playoff teams vary from season to season, these lists should be generated automatically from the data.
+<img width="455" height="558" alt="Interactive championship probability visualization" src="https://github.com/user-attachments/assets/21b427e6-9923-4ed7-881b-44949d8a46b4" />
 
-**2. Parameterize the season of interest.**
-We should use a single variable to specify the season of interest and replace hard-coded season references throughout the code. For example, we could define season_of_interest = "2024-25" and use this variable wherever the target season is referenced. This would allow us to change the prediction year by modifying only one variable.
+<img width="1007" height="580" alt="Championship probability comparison" src="https://github.com/user-attachments/assets/9853e72b-bb63-4907-4a93-a5c7-ab2f6df8df50" />
 
-**3. Improve the training and validation strategy.**
-Since the goal is to predict future playoff performance, a strictly chronological training and validation split could better reflect the real-world prediction setting.
+## V. Limitations and Future Improvements
 
-**4. Improve probability estimation.**
-The current championship probabilities are obtained by applying softmax normalization to the model's predicted playoff-win values. Future versions could explore a more statistically grounded approach for estimating and calibrating championship probabilities.
+### 1. Automate Playoff Team Selection
+
+The playoff team lists are currently hard-coded for individual seasons, such as `playoffs_22_23` and `playoffs_23_24`. Future versions could generate playoff team lists automatically from the underlying data to make the prediction pipeline more scalable.
+
+### 2. Parameterize the Target Season
+
+Season-specific references are currently hard-coded in parts of the code. A single parameter such as `season_of_interest = "2024-25"` could be used throughout the pipeline, allowing the prediction target to be changed without modifying multiple sections of the code.
+
+### 3. Strengthen Temporal Validation
+
+The current workflow already separates training, validation, and prediction seasons chronologically. However, the dataset contains a relatively small number of seasons.
+
+Future work could use rolling or expanding-window validation across multiple historical seasons to obtain a more robust estimate of out-of-sample performance.
+
+### 4. Improve Probability Estimation
+
+The current championship probabilities are obtained by applying softmax normalization to the predicted playoff-win values. This provides relative probabilities across the playoff teams but does not directly model the probability of winning the championship.
+
+Future versions could explore more statistically grounded approaches for estimating and calibrating championship probabilities.
+
+### 5. Improve Model Interpretability
+
+The dual-branch CNN provides limited insight into which player interactions contribute most to the predicted playoff performance.
+
+Future work could incorporate model interpretation techniques to investigate which regions of the heatmaps, and therefore which player combinations, have the greatest influence on the model's predictions.
