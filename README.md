@@ -4,24 +4,16 @@ A team project that predicts NBA playoff performance by transforming player-inte
 
 ## Project Structure
 ```text
-    NBA-Playoff-Prediction-Tool/
-    ├── data/
-    │   ├── heatmap/
-    │   │   ├── shared_minutes/
-    │   │   └── shared_pm_per_min/
-    │   └── labels.csv
-    │
-    ├── model/
-    │   └── best_model.pth
-    │
-    ├── results/
-    │   ├── loss_curve.png
-    │   ├── championship_probability/
-    │   └── ...
-    │
-    ├── NBA Playoff Prediction Tool.py
-    ├── LICENSE
-    └── README.md
+NBA-Playoff-Prediction-Tool/
+├── shared_minutes/ # pictures for CNN
+├── shared_pm_per_min/ # pictures for CNN
+├── .gitignore
+├── LICENSE
+├── NBA Playoff Prediction Tool.py
+├── README.md
+├── best_dual_model.pth
+├── labels.csv
+└── nba_prediction_chart.png
 ```
 - `data/heatmap/shared_minutes/`: Heatmaps representing the shared playing time of player pairs.
 - `data/heatmap/shared_pm_per_min/`: Heatmaps representing the shared plus-minus per minute of player pairs.
