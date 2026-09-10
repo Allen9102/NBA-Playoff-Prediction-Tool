@@ -100,7 +100,9 @@ The values are aggregated across games, and shared plus-minus per minute is calc
 
 `shared_PM_per_min = total_shared_PM / total_shared_minutes`
 
-<img width="1200" height="1000" alt="Atlanta_Hawks_201718_shared_pm_per_min" src="https://github.com/user-attachments/assets/0e31bac9-e9cb-436a-a5c7-ab2f6df8df50" />
+
+<img width="1200" height="1000" alt="Atlanta_Hawks_201819_shared_pm_per_min" src="https://github.com/user-attachments/assets/74650f09-2823-475f-a818-245fcce75090" />
+
 
 <img width="1200" height="1000" alt="Boston_Celtics_202324_shared_pm_per_min" src="https://github.com/user-attachments/assets/d652cd47-a34c-42b6-ba9b-c7251c91d2ec" />
 
